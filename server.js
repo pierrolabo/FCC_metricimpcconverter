@@ -8,14 +8,30 @@ var helmet = require('helmet');
 var apiRoutes = require('./routes/api.js');
 var fccTestingRoutes = require('./routes/fcctesting.js');
 var runner = require('./test-runner');
-
+const csp = require('helmet-csp');
 var app = express();
+
+//Security
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'", 'glitch.com', 'hyperdev.com'],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'code.jquery.com'],
+      },
+    },
+  })
+);
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({ origin: '*' })); //For FCC testing purposes only
 
-app.use(bodyParser.json());
+app.use(
+  bodyParser.json({
+    type: ['json', 'application/csp-report'],
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //Index page (static HTML)
@@ -23,6 +39,15 @@ app.route('/').get(function (req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
+//Content security violation
+app.route('/report-violation', (req, res) => {
+  if (req.body) {
+    console.log('CSP VIOLATION: ', req.body);
+  } else {
+    console.log('CSP VIOLATION: NO DATA');
+  }
+  res.status(204).end();
+});
 //For FCC testing purposes
 fccTestingRoutes(app);
 
