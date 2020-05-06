@@ -41,8 +41,8 @@ function ConvertHandler() {
     let regex = /[a-z]+/i;
     var result = input.match(regex);
     if (result === null) return 'invalid unit';
-    if (unit.indexOf(input) >= 0) {
-      return input.toLowerCase();
+    if (unit.indexOf(result[0]) >= 0) {
+      return result[0].toLowerCase();
     } else {
       return 'invalid unit';
     }
@@ -50,28 +50,98 @@ function ConvertHandler() {
 
   this.getReturnUnit = function (initUnit) {
     var result;
-
-    return result;
+    switch (initUnit) {
+      case 'l':
+        return 'gal';
+        break;
+      case 'gal':
+        return 'l';
+        break;
+      case 'km':
+        return 'mi';
+        break;
+      case 'mi':
+        return 'km';
+        break;
+      case 'kg':
+        return 'lbs';
+        break;
+      case 'lbs':
+        return 'kg';
+        break;
+      default:
+        break;
+    }
   };
 
+  //hy spellOutUnit exist ? why is this usefull ?
   this.spellOutUnit = function (unit) {
     var result;
-
-    return result;
+    switch (unit) {
+      case 'l':
+        return 'liters';
+        break;
+      case 'gal':
+        return 'gallons';
+        break;
+      case 'km':
+        return 'kilometers';
+        break;
+      case 'mi':
+        return 'miles';
+        break;
+      case 'kg':
+        return 'kilograms';
+        break;
+      case 'lbs':
+        return 'pounds';
+        break;
+      default:
+        break;
+    }
   };
 
   this.convert = function (initNum, initUnit) {
     const galToL = 3.78541;
     const lbsToKg = 0.453592;
     const miToKm = 1.60934;
-    var result;
-
-    return result;
+    switch (initUnit) {
+      case 'l':
+        return (initNum * 1) / galToL;
+        break;
+      case 'gal':
+        return initNum * galToL;
+        break;
+      case 'km':
+        return (initNum * 1) / miToKm;
+        break;
+      case 'mi':
+        return initNum * miToKm;
+        break;
+      case 'kg':
+        return (initNum * 1) / lbsToKg;
+        break;
+      case 'lbs':
+        return initNum * lbsToKg;
+        break;
+      default:
+        break;
+    }
   };
 
   this.getString = function (initNum, initUnit, returnNum, returnUnit) {
     var result;
 
+    //because initNum is default, we then know that both were falsy in the beginning
+    if (initNum === 1 && initUnit === 'invalid unit') {
+      return 'invalid number and unit';
+    }
+    if (initUnit === 'invalid unit') {
+      return 'invalid unit';
+    }
+    result = `${initNum} ${this.spellOutUnit(
+      initUnit
+    )} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`;
     return result;
   };
 }
